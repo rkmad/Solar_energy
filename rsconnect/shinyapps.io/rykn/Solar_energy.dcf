@@ -1,0 +1,13 @@
+name: Solar_energy
+title: Solar_energy
+username:
+account: rykn
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3072727
+bundleId: 3775658
+url: https://rykn.shinyapps.io/Solar_energy/
+when: 1603483615.36747
+asMultiple: FALSE
+asStatic: FALSE
+ignoredFiles: .RData|Project1_Shiny_dataclean3.Rmd|www/.DS_Store

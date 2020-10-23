@@ -1,0 +1,144 @@
+---
+title: "Shiny Viz"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r}
+# Eurostat data for Gross electricity production by source for Spain in GWh for 2018 ####
+library(tidyverse)
+library(readxl)
+library(lubridate)
+gross.elec <- read_csv("~/Documents/NYC_DSA/Project1_ShinyViz/energia_solar_ayunto/Eurostat_Spain_2018_nrg_bal_c/nrg_bal_c_3_Data.csv", col_names = TRUE, col_types = 'cccccccc', trim_ws = TRUE)
+
+# edit "value" column to eliminate spaces and convert ":"  to NA
+gross.elec [ ,7] <- as.numeric(gsub(" ", "", unlist(gross.elec[  ,7])))
+colnames(gross.elec) <-
+  c(
+    "Source",
+    "Region",
+    "NRG_BAL" ,
+    "UNIT",
+    "UNIT_LABEL",
+    "TIME",
+    "Value",
+    "Flag and Footnotes"
+  )
+save( gross.elec, file = "~/Documents/NYC_DSA/Project1_ShinyViz/ShinyViz/gross.elec.RData")
+
+
+# Madrid 61 building test set, PV solar kWh generation data by month across 2019-2020 P ####
+library(tidyverse)
+library(readxl)
+library(lubridate)
+
+pv61.2019 <- read_excel("~/Documents/NYC_DSA/Project1_ShinyViz/energia_solar_ayunto/ENERGÍA SOLAR FOTOVOLTAICA_Ayuntamiento de Madrid.xlsx", sheet = "DETALLE 2019", col_names =T, skip = 3)
+pv61.2020 <- read_excel("~/Documents/NYC_DSA/Project1_ShinyViz/energia_solar_ayunto/ENERGÍA SOLAR FOTOVOLTAICA_Ayuntamiento de Madrid.xlsx", sheet = "DETALLE 2020", col_names =T, skip = 3)
+
+# remove unnecessary rows and columns
+pv61.2019 <- pv61.2019[-(62:63), -(16:17)]
+pv61.2020 <- pv61.2020[-(62:63), -(6:14)]
+
+# edit column names
+colnames(pv61.2019) <- c("building", "type", "01-2019", "02-2019","03-2019","04-2019","05-2019","06-2019","07-2019","08-2019","09-2019","10-2019","11-2019","12-2019", "total2019")
+colnames(pv61.2020) <- c("building", "type", "01-2020", "02-2020","03-2020", "total2020")
+
+# library(zoo)
+# as.yearmon("01-2019", "%m-%Y")
+
+# join both into one table
+pv61 <- inner_join(pv61.2019, pv61.2020, by = c('building', 'type'))
+pv61$type[is.na(pv61$type)] <- "Other"
+save( pv61, file = "~/Documents/NYC_DSA/Project1_ShinyViz/ShinyViz/pv61.RData")
+pv61.pivot1 <-
+  pv61[, 1:15] %>% pivot_longer(
+    .,
+    cols = c(
+      "01-2019",
+      "02-2019",
+      "03-2019",
+      "04-2019",
+      "05-2019",
+      "06-2019",
+      "07-2019",
+      "08-2019",
+      "09-2019",
+      "10-2019",
+      "11-2019",
+      "12-2019",
+      "total2019"
+    ),
+    names_to = "month",
+    values_to = "values"
+  )
+pv61.pivot2 <-
+  pv61[, c(1:2, 16:19)] %>% pivot_longer(
+    .,
+    cols = c("01-2020", "02-2020", "03-2020", "total2020"),
+    names_to = "month",
+    values_to = "values"
+  )
+pv61.pivot <- bind_rows(pv61.pivot1, pv61.pivot2)
+save(pv61.pivot, file = "~/Documents/NYC_DSA/Project1_ShinyViz/ShinyViz/pv61.pivot.RData")
+
+# Meterological data: Climate Data Madrid Airport Barajas Monthly 2019 - 2020 P ####
+
+# month1 <- c("01-2019", "02-2019","03-2019","04-2019","05-2019","06-2019","07-2019","08-2019","09-2019","10-2019","11-2019","12-2019","01-2020","02-2020","03-2020")
+# mean.hours.sun.per.day <- c(6.7, )
+# num.clear.days <- c(16,)
+# solarrad.month <- 
+
+meterol <- read_csv("~/Documents/NYC_DSA/Project1_ShinyViz/data/meterological_data_madrid_barajas_NOPARENTHESES_2019-01_2020_03.csv", col_names = F, trim_ws = TRUE) 
+
+# fix disorganized table
+
+library(data.table)
+meterol.names <- meterol[1, c(1, seq(3,84,2))]
+meterol2 <- meterol[, -seq(1,84,2)]
+colnames(meterol2) <- meterol.names
+meterol2[, 1] <-
+  c(
+    "01-2019",
+    "02-2019",
+    "03-2019",
+    "04-2019",
+    "05-2019",
+    "06-2019",
+    "07-2019",
+    "08-2019",
+    "09-2019",
+    "10-2019",
+    "11-2019",
+    "12-2019",
+    "01-2020",
+    "02-2020",
+    "03-2020"
+  )
+save( meterol2, file = "~/Documents/NYC_DSA/Project1_ShinyViz/ShinyViz/meterol2.RData")
+
+# meterol2.t<- transpose(meterol2)
+# colnames(meterol2.t) <- rownames(meterol2)
+# rownames(meterol2.t) <- colnames(meterol2)
+
+# inso h
+# n_des 
+# glo KJ/m2
+```
+
+```{r}
+# Overview Text ####
+
+overv.para1 <- "To meet future demands, fight climate change, decrease reliance on foreign powers, encourage global stability and support the local economy, Spain ought to decrease its dependence on imported fossil fuels and shift focus to take advantage of renewable energy sources available within. According to Eurostat data from 2018, Spain imports a massive 73% of its energy needs, significantly higher than the average of 56% across all 28 EU member states (27 + United Kingdom, Source: Eurostat). Shockingly, for a country renown for its sunshine with largely mediterranean, subtropical, semiarid and desert climate zones, a paltry 4.64% of its electricity comes from solar sources (2.87% solar photovoltaic and 1.77% solar thermal, Source: Eurostat). Therefore, there are a great deal of opportunities for Spain to expand into the solar energy market."
+
+overv.para2 <- "This lack of dependence on solar energy sources is made obvious in the capital city, Madrid. With a population of 3.2 million, yet contains only 209 buildings that are outfitted with photovoltaic solar panels, of which 61 are city buildings (Source: City of Madrid). This is furthermore an embarrassment for the capital as due to climactic factors as well as its elevation (667 m, 2188 ft), it enjoys some of the longest sunshine duration hours in Europe, averaging 2769 hours of sunshine a year, corresponding to around 300 sunny days a year."
+
+overv.para3 <- "As a study of the potential Madrid has to augment its generation of solar power, data from the 61 municipal buildings that contain rooftop solar panel installations was analyzed as a test set. This allowed for the calculation of photovoltaic kilowatt-hours generated (kWh), which was extrapolated to query how much energy could hypothetically be generated across the city given more widespread installation of photovoltaics."
+
+save( overv.para1, overv.para2, overv.para3, file = "~/Documents/NYC_DSA/Project1_ShinyViz/ShinyViz/text.RData")
+
+```
+
+  
