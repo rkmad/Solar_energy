@@ -1,4 +1,4 @@
-My project examines the potential for increased use of photovoltaic energy in Spain. \
+This project examines the potential for increased use of photovoltaic energy in Spain. \
 \
 The [Shiny App](https://rykn.shinyapps.io/Solar_energy/) I created takes an interactive view of the issue by first exploring Spain's current sources of energy production in comparison with the rest of Europe. Next, a test data set of rooftop photovoltaic energy generation in Madrid is investigated to demonstrate the feasibility of more widespread expansion of this energy source.\
 \
