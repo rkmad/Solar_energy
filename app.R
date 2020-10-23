@@ -292,7 +292,7 @@ ui <-
               "This data visualization is intended to demonstrate to the general public and interested parties the potential benefits of widespread generation of electricity using solar photovoltaics, generally in sunny regions, such as Spain, and more specifically in Madrid.
 As a rough calculation, extrapolating the data from the 61 municipal buildings gives the following estimated values:
 The yearly yield of the photovoltaic buildings test set is ~900000 kWh per year, or an average of 15000 kWh per year per building.
-Extending this for larger implementation to the residential sector, there are ~110000 multi-unit apartment buildings in Madrid, giving a potential to generate 1.65 billion kWh per year. Considering that the energy consumption of the residental sector for 2019 was 4.3 billion kWh, the implementation of photovoltaics in every apartment building in the city could decrease consumption demand from the grid by ~38% per year."
+Extending this for larger implementation to the residential sector, there are ~110000 multi-unit apartment buildings in Madrid, giving a potential to generate 1.65 billion kWh per year. Considering that the energy consumption of the residential sector for 2019 was 4.3 billion kWh, the implementation of photovoltaics in every apartment building in the city could decrease consumption demand from the grid by ~38% per year."
             ),
           ),
           column(width = 6,
